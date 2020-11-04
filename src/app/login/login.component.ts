@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Configuration, LoginFlow, LoginFlowMethod, PublicApi} from '@oryd/kratos-client';
 import {environment} from '../../environments/environment';
 import {FormControl, FormGroup} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
-import {map, switchMap} from 'rxjs/operators';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {concatMap, map, switchMap, tap} from 'rxjs/operators';
 import {from} from 'rxjs';
 import {AxiosResponse} from 'axios';
 
@@ -29,39 +29,32 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.pipe(
       map<Params, string>(params => params.flow),
-      switchMap(flow => from(this.kratos.getSelfServiceLoginFlow(flow)).pipe(
-        map<AxiosResponse<LoginFlow>, any>(res => {
-          this.flow = flow;
-          if (res.status !== 200) {
-            throw new Error('Rejected');
-          }
-          return res.data.methods.password;
-        })))
-    ).subscribe(loginFlow => {
-      this.login = loginFlow;
+      switchMap(flow => this.http.get(`${environment.kratos_public}/self-service/login/flows?id=${flow}`,
+        {withCredentials: true}).pipe(
+        map<LoginFlow, { flow: string, config: LoginFlowMethod }>(res => ({flow, config: res.methods.password}))
+      )),
+    ).subscribe(data => {
+      this.login = data.config;
+      this.flow = data.flow;
     });
-    //     .catch(redirectOnSoftError(res, next, '/self-service/login/browser'));
   }
 
   submit() {
-    if (!this.flow) {
-      window.location.href = `${environment.kratos_public}/self-service/login/browser`;
-      return;
-    }
     const config = this.login.config;
-    const formData = new FormData();
+    const params = new URLSearchParams();
+    const headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
 
     for (const field of config.fields) {
       const formField = this.form.controls[field.name];
       if (!formField) {
-        formData.append(field.name, field.value as unknown as string);
+        params.set(field.name, field.value as unknown as string);
       } else {
-        formData.append(field.name, formField.value);
+        params.set(field.name, formField.value);
       }
     }
-    this.http.request(config.method, config.action, {body: formData})
-      .subscribe(x => console.log(x));
 
+    this.http.request(config.method, config.action, {headers, body: params.toString(), withCredentials: true})
+      .subscribe(x => console.log(x));
     return;
   }
 }

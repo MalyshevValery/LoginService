@@ -21,4 +21,8 @@ export class DashboardComponent implements OnInit {
       {withCredentials: true});
     this.info$.subscribe(x => console.log(x));
   }
+
+  logout() {
+    window.location.href = `${environment.kratos_public}/self-service/browser/flows/logout`;
+  }
 }

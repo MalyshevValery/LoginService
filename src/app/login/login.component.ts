@@ -5,7 +5,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {concatMap, map, switchMap, tap} from 'rxjs/operators';
-import {from} from 'rxjs';
+import {from, iif, of} from 'rxjs';
 import {AxiosResponse} from 'axios';
 
 @Component({
@@ -29,9 +29,17 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.pipe(
       map<Params, string>(params => params.flow),
-      switchMap(flow => this.http.get(`${environment.kratos_public}/self-service/login/flows?id=${flow}`,
+      switchMap(flow => iif(() => !flow,
+        of(flow).pipe(
+          tap(() => {
+            window.location.href = `${environment.kratos_public}/self-service/login/browser`;
+          }),
+          map(() => ({flow: null, config: null}))
+        ),
+        this.http.get(`${environment.kratos_public}/self-service/login/flows?id=${flow}`,
         {withCredentials: true}).pipe(
-        map<LoginFlow, { flow: string, config: LoginFlowMethod }>(res => ({flow, config: res.methods.password}))
+          map<LoginFlow, { flow: string, config: LoginFlowMethod }>(res => ({flow, config: res.methods.password}))
+        )
       )),
     ).subscribe(data => {
       this.login = data.config;

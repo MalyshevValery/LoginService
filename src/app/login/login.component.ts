@@ -50,7 +50,10 @@ export class LoginComponent implements OnInit {
   submit() {
     const config = this.login.config;
     const params = new URLSearchParams();
-    const headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: '*/*'
+    });
 
     for (const field of config.fields) {
       const formField = this.form.controls[field.name];
@@ -60,7 +63,6 @@ export class LoginComponent implements OnInit {
         params.set(field.name, formField.value);
       }
     }
-
     this.http.request(config.method, config.action, {headers, body: params.toString(), withCredentials: true})
       .subscribe(x => console.log(x));
     return;

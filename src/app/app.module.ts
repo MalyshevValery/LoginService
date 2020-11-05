@@ -11,6 +11,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { LinkComponent } from './link/link.component';
 import {ErrorComponent} from './error/error.component';
+import { RecoveryComponent } from './recovery/recovery.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {ErrorComponent} from './error/error.component';
     DashboardComponent,
     LoginComponent,
     LinkComponent,
-    ErrorComponent
+    ErrorComponent,
+    RecoveryComponent
   ],
   imports: [
     BrowserModule,

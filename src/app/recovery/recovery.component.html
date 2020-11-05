@@ -1,0 +1,63 @@
+<div class="container">
+
+  <mat-card class="card">
+    <mat-card-title>Profile Edit</mat-card-title>
+    <mat-card-content *ngIf="this.profile$ | async as profile">
+      <form #form action="{{profile.action}}" method="{{profile.method}}">
+        <p *ngFor="let f of profile.fields.filter(this.not_csrf)">
+          <mat-form-field>
+            <input type="text" matInput placeholder="{{to_title(f.name)}}" name="{{f.name}}" value="{{f.value}}">
+          </mat-form-field>
+        </p>
+        <p *ngFor="let f of profile.fields.filter(this.have_messages)">
+          <mat-card *ngFor="let m of f.messages" class="message">
+            {{m.text}}
+          </mat-card>
+        </p>
+
+        <input name="csrf_token" type="hidden" value="{{get_token(profile)}}">
+
+        <p *ngIf="profile.messages as messages">
+          <mat-card *ngFor="let m of messages" class="message">
+            {{m.text}}
+          </mat-card>
+        </p>
+
+        <div class="but-wrapper">
+          <button type="submit" (click)="form.submit()" mat-raised-button color="primary">Update</button>
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="card">
+    <mat-card-title>Password Reset</mat-card-title>
+    <mat-card-content *ngIf="this.pass$ | async as pass">
+      <form #form action="{{pass.action}}" method="{{pass.method}}">
+        <p>
+          <mat-form-field>
+            <input type="password" matInput placeholder="Password" name="password">
+          </mat-form-field>
+        </p>
+        <input name="csrf_token" id="csrf_token" type="hidden" value="{{get_token(pass)}}">
+
+        <p *ngIf="pass.messages as messages">
+          <mat-card *ngFor="let m of messages" class="message">
+            {{m.text}}
+          </mat-card>
+        </p>
+        <p *ngFor="let f of pass.fields.filter(this.have_messages)">
+          <mat-card *ngFor="let m of f.messages" class="message">
+            {{m.text}}
+          </mat-card>
+        </p>
+
+        <div class="but-wrapper">
+          <button type="submit" (click)="form.submit()" mat-raised-button color="primary">Reset</button>
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,12 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {Configuration, LoginFlow, LoginFlowMethod, PublicApi} from '@oryd/kratos-client';
+import {LoginFlow, LoginFlowMethod, Message} from '@oryd/kratos-client';
 import {environment} from '../../environments/environment';
-import {FormControl, FormGroup} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {concatMap, map, switchMap, tap} from 'rxjs/operators';
-import {from, iif, of} from 'rxjs';
-import {AxiosResponse} from 'axios';
+import {HttpClient} from '@angular/common/http';
+import {map, switchMap, tap} from 'rxjs/operators';
+import {BehaviorSubject, iif, of} from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -14,14 +12,8 @@ import {AxiosResponse} from 'axios';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  private kratos = new PublicApi(new Configuration({basePath: environment.kratos_public}));
-  private flow = null;
-  private login: LoginFlowMethod;
-
-  form: FormGroup = new FormGroup({
-    identifier: new FormControl(''),
-    password: new FormControl(''),
-  });
+  private login$ = new BehaviorSubject<LoginFlowMethod>(null);
+  private messages$ = new BehaviorSubject<Message[]>(null);
 
   constructor(private router: Router, private route: ActivatedRoute, private http: HttpClient) {
   }
@@ -34,37 +26,36 @@ export class LoginComponent implements OnInit {
           tap(() => {
             window.location.href = `${environment.kratos_public}/self-service/login/browser`;
           }),
-          map(() => ({flow: null, config: null}))
+          map(() => ({flow: null, config: null, messages: null}))
         ),
         this.http.get(`${environment.kratos_public}/self-service/login/flows?id=${flow}`,
-        {withCredentials: true}).pipe(
-          map<LoginFlow, { flow: string, config: LoginFlowMethod }>(res => ({flow, config: res.methods.password}))
+          {withCredentials: true}).pipe(
+          map<LoginFlow, { flow: string, config: LoginFlowMethod, messages: Message[] }>(res => ({
+            flow,
+            config: res.methods.password,
+            messages: res.messages
+          }))
         )
       )),
-    ).subscribe(data => {
-      this.login = data.config;
-      this.flow = data.flow;
+    ).subscribe(res => {
+      let messages = res.messages;
+      if (messages == null) {
+        messages = res.config.config.messages;
+      } else if (res.config.config.messages !== null) {
+        messages.concat(res.config.config.messages);
+      }
+      this.login$.next(res.config);
+      this.messages$.next(messages);
     });
   }
 
-  submit() {
-    const config = this.login.config;
-    const params = new URLSearchParams();
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: '*/*'
-    });
-
-    for (const field of config.fields) {
-      const formField = this.form.controls[field.name];
-      if (!formField) {
-        params.set(field.name, field.value as unknown as string);
-      } else {
-        params.set(field.name, formField.value);
+  get_token(config: LoginFlowMethod) {
+    const fields = config.config.fields;
+    for (const f of fields) {
+      if (f.name === 'csrf_token') {
+        return f.value;
       }
     }
-    this.http.request(config.method, config.action, {headers, body: params.toString(), withCredentials: true})
-      .subscribe(x => console.log(x));
-    return;
+    return null;
   }
 }

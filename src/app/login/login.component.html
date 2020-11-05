@@ -1,26 +1,30 @@
 <div class="container">
   <mat-card class="card">
     <mat-card-title>Login</mat-card-title>
-    <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-card-content *ngIf="this.login$ | async as login">
+      <form #form action="{{login.config.action}}" method="{{login.config.method}}">
         <p>
           <mat-form-field>
-            <input type="text" matInput placeholder="Username" formControlName="identifier">
+            <input type="text" matInput placeholder="Username" name="identifier">
           </mat-form-field>
         </p>
 
         <p>
           <mat-form-field>
-            <input type="password" matInput placeholder="Password" formControlName="password">
+            <input type="password" matInput placeholder="Password" name="password">
           </mat-form-field>
         </p>
 
-        <p *ngIf="error" class="error">
-          {{ error }}
+        <input name="csrf_token" id="csrf_token" type="hidden" value="{{get_token(login)}}">
+
+        <p *ngIf="this.messages$ | async as messages">
+          <mat-card *ngFor="let m of messages" class="message">
+            {{m.text}}
+          </mat-card>
         </p>
 
         <div class="but-wrapper">
-          <button type="submit" mat-raised-button color="primary">Login</button>
+          <button type="submit" (click)="form.submit()" mat-raised-button color="primary">Login</button>
         </div>
 
       </form>

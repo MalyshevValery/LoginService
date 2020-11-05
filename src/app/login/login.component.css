@@ -12,11 +12,26 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  width: 250px;
 }
 
 .but-wrapper{
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.message{
+  background-color: red;
+  color: white;
+  flex-grow: 0;
+  text-align: justify-all;
+}
+
+p{
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }

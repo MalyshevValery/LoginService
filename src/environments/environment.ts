@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  kratos_public: 'http://127.0.0.1:4433'
+  kratos_public: 'https://apibioimage.hopto.org/kratos'
+  // kratos_public: 'http://127.0.0.1:4433'
 };
 
 /*

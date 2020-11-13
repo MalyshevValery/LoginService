@@ -12,8 +12,8 @@ import {BehaviorSubject, iif, of} from 'rxjs';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  private login$ = new BehaviorSubject<LoginFlowMethod>(null);
-  private messages$ = new BehaviorSubject<Message[]>(null);
+  public login$ = new BehaviorSubject<LoginFlowMethod>(null);
+  public messages$ = new BehaviorSubject<Message[]>(null);
 
   constructor(private router: Router, private route: ActivatedRoute, private http: HttpClient) {
   }

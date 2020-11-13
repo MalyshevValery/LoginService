@@ -11,7 +11,7 @@ import {of, Subject} from 'rxjs';
   styleUrls: ['./error.component.css']
 })
 export class ErrorComponent implements OnInit {
-  private error$ = new Subject();
+  public error$ = new Subject();
 
   constructor(private http: HttpClient, private route: ActivatedRoute) {
   }

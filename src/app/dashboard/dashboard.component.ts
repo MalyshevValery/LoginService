@@ -10,7 +10,7 @@ import {Subject} from 'rxjs';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  private info$;
+  public info$;
 
   constructor(private http: HttpClient) {
 

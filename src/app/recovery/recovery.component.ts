@@ -27,9 +27,9 @@ interface RetType {
   styleUrls: ['./recovery.component.css']
 })
 export class RecoveryComponent implements OnInit {
-  private profile$ = new BehaviorSubject<SettingsFlowMethodConfig>(null);
-  private pass$ = new BehaviorSubject<SettingsFlowMethodConfig>(null);
-  private messages$ = new BehaviorSubject<Message[]>(null);
+  public profile$ = new BehaviorSubject<SettingsFlowMethodConfig>(null);
+  public pass$ = new BehaviorSubject<SettingsFlowMethodConfig>(null);
+  public messages$ = new BehaviorSubject<Message[]>(null);
 
   constructor(private route: ActivatedRoute, private http: HttpClient) {
   }

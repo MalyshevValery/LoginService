@@ -7,7 +7,7 @@ import {environment} from '../../environments/environment';
   styleUrls: ['./link.component.css']
 })
 export class LinkComponent implements OnInit {
-  private href = `${environment.kratos_public}/self-service/login/browser`;
+  public href = `${environment.kratos_public}/self-service/login/browser`;
   constructor() { }
 
   ngOnInit() {

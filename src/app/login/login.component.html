@@ -1,8 +1,8 @@
 <div class="container">
   <mat-card class="card">
     <mat-card-title>Login</mat-card-title>
-    <mat-card-content *ngIf="this.login$ | async as login">
-      <form #form action="{{login.config.action}}" method="{{login.config.method}}">
+    <mat-card-content *ngIf="(this.methods$ | async)?.password.config as config">
+      <form #form action="{{config.action}}" method="{{config.method}}">
         <p>
           <mat-form-field>
             <input type="text" matInput placeholder="Email" name="identifier">
@@ -15,7 +15,7 @@
           </mat-form-field>
         </p>
 
-        <input name="csrf_token" id="csrf_token" type="hidden" value="{{get_token(login)}}">
+        <input name="csrf_token" id="csrf_token" type="hidden" value="{{this.csrf.get_token()}}">
 
         <p *ngIf="this.messages$ | async as messages">
           <mat-card *ngFor="let m of messages" class="message">
@@ -27,6 +27,18 @@
           <button type="submit" (click)="form.submit()" mat-raised-button color="primary">Login</button>
         </div>
 
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="card">
+    <mat-card-content *ngIf="(this.methods$ | async)?.oidc.config as config">
+      <form #form_github action="{{config.action}}" method="{{config.method}}">
+        <input name="provider" id="github_provider" type="hidden" value="github">
+        <input name="csrf_token" id="csrf_token_github" type="hidden" value="{{this.csrf.get_token()}}">
+        <div class="but-wrapper">
+          <button type="submit" (click)="form_github.submit()" mat-raised-button color="primary">GitHub</button>
+        </div>
       </form>
     </mat-card-content>
   </mat-card>

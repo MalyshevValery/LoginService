@@ -4,15 +4,9 @@
 
 export const environment = {
   production: false,
-  kratos_public: 'https://apibioimage.hopto.org/kratos'
-  // kratos_public: 'http://127.0.0.1:4433'
-};
-
-/*
- * For easier debugging in development mode, you can import the following file
- * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
- *
- * This import should be commented out in production mode because it will have a negative impact
- * on performance if an error is thrown.
- */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+  // kratos_public: 'https://apibioimage.hopto.org/kratos'
+  kratos_public: 'http://127.0.0.1/kratos',
+  url_mapping: {
+    github: 'http://127.0.0.1/kratos/self-service/methods/oidc/callback/github'
+  },
+}

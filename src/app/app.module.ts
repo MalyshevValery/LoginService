@@ -20,7 +20,7 @@ import { RecoveryComponent } from './recovery/recovery.component';
     LoginComponent,
     LinkComponent,
     ErrorComponent,
-    RecoveryComponent
+    RecoveryComponent,
   ],
   imports: [
     BrowserModule,
